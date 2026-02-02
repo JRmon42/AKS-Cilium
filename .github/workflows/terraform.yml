@@ -1,0 +1,191 @@
+name: Terraform CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'terraform/**'
+
+env:
+  TF_VERSION: 1.5.0
+  ARM_USE_OIDC: true
+
+jobs:
+  terraform-validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Terraform Format Check
+      working-directory: ./terraform
+      run: terraform fmt -check -recursive
+
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init -backend=false
+
+    - name: Terraform Validate
+      working-directory: ./terraform
+      run: terraform validate
+
+  kubernetes-manifest-validate:
+    name: Kubernetes Manifests Validate
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+
+    - name: Validate Network Policies
+      run: |
+        kubectl apply --dry-run=client -f manifests/network-policies/
+
+    - name: Validate Monitoring Manifests
+      run: |
+        kubectl apply --dry-run=client -f manifests/monitoring/ || true
+
+    - name: Validate Constraint Templates
+      run: |
+        kubectl apply --dry-run=client -f manifests/constraints/templates/
+
+    - name: Validate Constraints
+      run: |
+        kubectl apply --dry-run=client -f manifests/constraints/constraints/
+
+  shellcheck:
+    name: ShellCheck Scripts
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Run ShellCheck
+      uses: ludeeus/action-shellcheck@master
+      with:
+        scandir: './scripts'
+        severity: warning
+
+    - name: Check Demo Scripts
+      uses: ludeeus/action-shellcheck@master
+      with:
+        scandir: './demos'
+        severity: warning
+
+  markdown-lint:
+    name: Markdown Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Lint Markdown files
+      uses: nosborn/github-action-markdown-cli@v3.3.0
+      with:
+        files: .
+        config_file: .markdownlint.json
+        ignore_files: .github/
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'config'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  terraform-plan:
+    name: Terraform Plan (PR Only)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [terraform-validate]
+    
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+
+    - name: Terraform Plan
+      working-directory: ./terraform
+      run: terraform plan -no-color -out=tfplan
+      continue-on-error: true
+      id: plan
+
+    - name: Comment PR with Plan
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request'
+      env:
+        PLAN_OUTPUT: ${{ steps.plan.outputs.stdout }}
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const output = `#### Terraform Plan 📖
+          
+          <details><summary>Show Plan</summary>
+          
+          \`\`\`terraform
+          ${process.env.PLAN_OUTPUT}
+          \`\`\`
+          
+          </details>
+          
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })

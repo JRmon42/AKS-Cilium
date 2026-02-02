@@ -1,0 +1,35 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+tfplan
+*.tfvars
+!terraform.tfvars.example
+
+# Bicep
+*.deploymentState.json
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.history/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Kubernetes
+kubeconfig
+*.kubeconfig
+
+# Logs
+*.log
+
+# Local environment
+.env
+.env.local
+secrets/

@@ -1,0 +1,22 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: l7-http-policy
+  namespace: demo-app
+spec:
+  description: "L7 HTTP policy - Allow only GET requests to specific paths"
+  endpointSelector:
+    matchLabels:
+      tier: backend
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        tier: frontend
+    toPorts:
+    - ports:
+      - port: "5678"
+        protocol: TCP
+      rules:
+        http:
+        - method: "GET"
+          path: "/.*"

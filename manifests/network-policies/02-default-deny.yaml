@@ -1,0 +1,12 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: demo-app
+spec:
+  description: "Default deny all ingress and egress traffic"
+  endpointSelector: {}
+  ingress:
+  - {}
+  egress:
+  - {}

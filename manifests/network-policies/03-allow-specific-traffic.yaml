@@ -1,0 +1,37 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-frontend-to-backend
+  namespace: demo-app
+spec:
+  description: "Allow frontend to communicate with backend"
+  endpointSelector:
+    matchLabels:
+      tier: backend
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        tier: frontend
+    toPorts:
+    - ports:
+      - port: "5678"
+        protocol: TCP
+---
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-backend-to-database
+  namespace: demo-app
+spec:
+  description: "Allow backend to communicate with database"
+  endpointSelector:
+    matchLabels:
+      tier: database
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        tier: backend
+    toPorts:
+    - ports:
+      - port: "5432"
+        protocol: TCP

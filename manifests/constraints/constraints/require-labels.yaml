@@ -1,0 +1,21 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: require-common-labels
+spec:
+  match:
+    kinds:
+      - apiGroups: ["apps"]
+        kinds: ["Deployment", "StatefulSet", "DaemonSet"]
+      - apiGroups: [""]
+        kinds: ["Service", "Pod"]
+    namespaces:
+      - "demo-app"
+    excludedNamespaces:
+      - "kube-system"
+      - "gatekeeper-system"
+      - "monitoring"
+  parameters:
+    labels:
+      - "app"
+      - "environment"
