@@ -1,18 +1,20 @@
 # Repository Summary
 
-**AKS with Cilium - Network Policy, Monitoring, and Constraints Demo**
+**AKS with Azure CNS and Cilium - Network Policy, Monitoring, and Constraints Demo**
 
 ## 📦 What's Included
 
-This repository is now a **complete, production-ready Infrastructure as Code solution** for deploying Azure Kubernetes Service with Cilium, including:
+This repository is now a **complete, production-ready Infrastructure as Code solution** for deploying Azure Kubernetes Service with **Azure CNS (Container Networking Service)** and **Cilium dataplane**, including:
 
 ### Infrastructure (Terraform)
-✅ AKS cluster with Cilium CNI/dataplane  
+✅ AKS cluster with **Azure CNS overlay networking**  
+✅ **Cilium eBPF dataplane** for advanced networking  
 ✅ Virtual network and subnet configuration  
 ✅ Log Analytics workspace integration  
 ✅ Managed identity setup  
 ✅ Auto-scaling configuration  
 ✅ Azure Monitor integration  
+✅ **Azure Portal integration** with direct URLs  
 
 ### Monitoring Stack
 ✅ Prometheus with Cilium metrics scraping  
@@ -37,6 +39,9 @@ This repository is now a **complete, production-ready Infrastructure as Code sol
 
 ### Documentation
 ✅ Comprehensive README  
+✅ **Azure CNS with Cilium guide**  
+✅ **Azure Portal management guide**  
+✅ **Quick access guide for all UIs**  
 ✅ Getting Started guide  
 ✅ Architecture documentation  
 ✅ Deployment guide  
@@ -44,7 +49,8 @@ This repository is now a **complete, production-ready Infrastructure as Code sol
 ✅ Contributing guidelines  
 
 ### Automation Scripts
-✅ Deployment automation  
+✅ Deployment a  
+✅ **One-click UI launcher** (Grafana, Hubble, Prometheus)utomation  
 ✅ Prerequisites checker  
 ✅ Cleanup script  
 ✅ Demo runners  
@@ -110,13 +116,17 @@ AKS-Cilium/
 │
 ├── scripts/                           # Utility scripts
 │   ├── deploy.sh                     # Full deployment automation
-│   ├── cleanup.sh                    # Resource cleanup
-│   └── check-prerequisites.sh        # Prerequisites verification
+│   ├── check-prerequisites.sh        # Prerequisites verification
+│   └── open-all-uis.sh              # Start all monitoring UIs
 │
 └── docs/                              # Additional documentation
     ├── GETTING-STARTED.md            # Quick start guide
     ├── ARCHITECTURE.md               # Architecture details
     ├── DEPLOYMENT.md                 # Deployment guide
+    ├── TROUBLESHOOTING.md            # Troubleshooting guide
+    ├── AZURE-CNS.md                  # Azure CNS networking guide
+    ├── PORTAL-GUIDE.md               # Azure Portal management
+    └── QUICK-ACCESS.md               # Quick reference for UIs
     └── TROUBLESHOOTING.md            # Troubleshooting guide
 ```
 
@@ -140,12 +150,14 @@ cd AKS-Cilium
 
 # Cleanup
 ./scripts/cleanup.sh
-```
-
-## 💡 Key Features
-
-1. **Cilium eBPF**: High-performance networking with kernel-level packet processing
-2. **Network Policies**: L3-L7 policies with DNS and FQDN support
+```Azure CNS**: Container Networking Service with overlay networking (no IP exhaustion)
+2. **Cilium eBPF**: High-performance dataplane with kernel-level packet processing
+3. **Network Policies**: L3-L7 policies with DNS and FQDN support
+4. **Observability**: Hubble UI for real-time network flow visualization
+5. **Monitoring**: Complete Prometheus/Grafana stack with Azure Monitor
+6. **Portal Integration**: Full Azure Portal GUI management support
+7. **Policy Enforcement**: OPA Gatekeeper with custom constraints
+8. **Network Policies**: L3-L7 policies with DNS and FQDN support
 3. **Observability**: Hubble UI for real-time network flow visualization
 4. **Monitoring**: Complete Prometheus/Grafana stack
 5. **Policy Enforcement**: OPA Gatekeeper with custom constraints

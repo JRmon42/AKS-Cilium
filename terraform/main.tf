@@ -78,9 +78,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
     identity_ids = [azurerm_user_assigned_identity.aks.id]
   }
 
+  # Network configuration using Azure CNS (Container Networking Service)
+  # - Plugin: azure = Azure CNI
+  # - Mode: overlay = Azure CNS overlay networking (no subnet IP exhaustion)
+  # - Dataplane: cilium = Cilium eBPF for advanced networking features
   network_profile {
     network_plugin      = var.network_plugin
-    network_policy      = var.network_policy
+    network_plugin_mode = var.network_plugin_mode
     network_data_plane  = var.network_dataplane
     service_cidr        = "10.1.0.0/16"
     dns_service_ip      = "10.1.0.10"
@@ -154,10 +158,7 @@ resource "helm_release" "gatekeeper" {
 # Cilium CLI (for Hubble)
 resource "null_resource" "enable_hubble" {
   provisioner "local-exec" {
-    command = <<-EOT
-      az aks get-credentials --resource-group ${azurerm_resource_group.rg.name} --name ${azurerm_kubernetes_cluster.aks.name} --overwrite-existing
-      cilium hubble enable --ui
-    EOT
+    command = "az aks get-credentials --resource-group ${azurerm_resource_group.rg.name} --name ${azurerm_kubernetes_cluster.aks.name} --overwrite-existing && cilium hubble enable --ui"
   }
 
   depends_on = [azurerm_kubernetes_cluster.aks]

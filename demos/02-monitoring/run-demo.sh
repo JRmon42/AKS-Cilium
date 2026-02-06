@@ -6,6 +6,9 @@ echo "AKS Cilium - Monitoring Demo"
 echo "==========================================="
 echo ""
 
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # Colors for output
 GREEN='\033[0;32m'
 RED='\033[0;31m'

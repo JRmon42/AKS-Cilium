@@ -4,9 +4,9 @@
 resource_group_name = "rg-aks-cilium-demo"
 location            = "eastus"
 cluster_name        = "aks-cilium-demo"
-kubernetes_version  = "1.28"
+kubernetes_version  = "1.33"
 node_count          = 3
-node_vm_size        = "Standard_D4s_v3"
+node_vm_size        = "Standard_D4s_v5"
 enable_auto_scaling = true
 min_count           = 2
 max_count           = 5

@@ -7,7 +7,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "Azure region for resources"
   type        = string
-  default     = "eastus"
+  default     = "swedencentral"
 }
 
 variable "cluster_name" {
@@ -19,7 +19,7 @@ variable "cluster_name" {
 variable "kubernetes_version" {
   description = "Kubernetes version"
   type        = string
-  default     = "1.28"
+  default     = "1.33"
 }
 
 variable "node_count" {
@@ -53,21 +53,21 @@ variable "max_count" {
 }
 
 variable "network_plugin" {
-  description = "Network plugin to use (azure, none for Cilium)"
+  description = "Network plugin to use (azure = Azure CNI with CNS)"
   type        = string
-  default     = "none"
-}
-
-variable "network_policy" {
-  description = "Network policy to use (cilium)"
-  type        = string
-  default     = "cilium"
+  default     = "azure"
 }
 
 variable "network_dataplane" {
-  description = "Network dataplane (cilium for eBPF)"
+  description = "Network dataplane (cilium = eBPF-based dataplane for advanced networking)"
   type        = string
   default     = "cilium"
+}
+
+variable "network_plugin_mode" {
+  description = "Network plugin mode (overlay = Azure CNS overlay networking, no subnet IP exhaustion)"
+  type        = string
+  default     = "overlay"
 }
 
 variable "tags" {

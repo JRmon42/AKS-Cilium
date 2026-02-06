@@ -6,6 +6,10 @@ echo "AKS Cilium - OPA Gatekeeper Constraints Demo"
 echo "==========================================="
 echo ""
 
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MANIFESTS_DIR="$SCRIPT_DIR/../../manifests/constraints"
+
 # Colors for output
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -44,7 +48,7 @@ echo ""
 
 # Step 2: Deploy constraint templates
 print_yellow "Step 2: Deploying constraint templates..."
-kubectl apply -f ../../manifests/constraints/templates/
+kubectl apply -f "$MANIFESTS_DIR/templates/"
 sleep 5
 print_green "Constraint templates deployed"
 kubectl get constrainttemplates
@@ -52,7 +56,7 @@ echo ""
 
 # Step 3: Deploy constraints
 print_yellow "Step 3: Deploying constraints..."
-kubectl apply -f ../../manifests/constraints/constraints/
+kubectl apply -f "$MANIFESTS_DIR/constraints/"
 sleep 5
 print_green "Constraints deployed"
 kubectl get constraints
@@ -225,5 +229,5 @@ echo "3. Create custom constraint templates for your needs"
 echo "4. Monitor violations in production"
 echo ""
 echo "To cleanup:"
-echo "  kubectl delete -f ../../manifests/constraints/constraints/"
-echo "  kubectl delete -f ../../manifests/constraints/templates/"
+echo "  kubectl delete -f $MANIFESTS_DIR/constraints/"
+echo "  kubectl delete -f $MANIFESTS_DIR/templates/"

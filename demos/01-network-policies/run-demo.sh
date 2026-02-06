@@ -6,6 +6,10 @@ echo "AKS Cilium - Network Policies Demo"
 echo "==========================================="
 echo ""
 
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MANIFESTS_DIR="$SCRIPT_DIR/../../manifests/network-policies"
+
 # Colors for output
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -34,8 +38,8 @@ echo ""
 
 # Step 1: Deploy sample applications
 print_yellow "Step 1: Deploying sample applications..."
-kubectl apply -f ../../manifests/network-policies/00-namespace.yaml
-kubectl apply -f ../../manifests/network-policies/01-sample-apps.yaml
+kubectl apply -f "$MANIFESTS_DIR/00-namespace.yaml"
+kubectl apply -f "$MANIFESTS_DIR/01-sample-apps.yaml"
 print_green "Applications deployed"
 echo ""
 
@@ -66,7 +70,7 @@ echo ""
 
 # Step 3: Apply default deny policy
 print_yellow "Step 3: Applying default deny policy..."
-kubectl apply -f ../../manifests/network-policies/02-default-deny.yaml
+kubectl apply -f "$MANIFESTS_DIR/02-default-deny.yaml"
 sleep 5
 print_green "Default deny policy applied"
 echo ""
@@ -83,8 +87,8 @@ echo ""
 
 # Step 5: Apply selective allow policies
 print_yellow "Step 5: Applying selective allow policies..."
-kubectl apply -f ../../manifests/network-policies/03-allow-specific-traffic.yaml
-kubectl apply -f ../../manifests/network-policies/04-allow-dns.yaml
+kubectl apply -f "$MANIFESTS_DIR/03-allow-specific-traffic.yaml"
+kubectl apply -f "$MANIFESTS_DIR/04-allow-dns.yaml"
 sleep 5
 print_green "Selective allow policies applied"
 echo ""
@@ -108,14 +112,14 @@ echo ""
 
 # Step 7: Apply L7 policy
 print_yellow "Step 7: Applying Layer 7 HTTP policy..."
-kubectl apply -f ../../manifests/network-policies/05-l7-policy.yaml
+kubectl apply -f "$MANIFESTS_DIR/05-l7-policy.yaml"
 sleep 5
 print_green "L7 policy applied"
 echo ""
 
 # Step 8: Apply FQDN policy
 print_yellow "Step 8: Applying FQDN-based egress policy..."
-kubectl apply -f ../../manifests/network-policies/06-fqdn-policy.yaml
+kubectl apply -f "$MANIFESTS_DIR/06-fqdn-policy.yaml"
 sleep 5
 print_green "FQDN policy applied"
 echo ""
